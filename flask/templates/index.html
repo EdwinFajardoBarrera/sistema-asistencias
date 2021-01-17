@@ -1,0 +1,68 @@
+<!-- <!doctype html>
+<title>Hello from Flask</title>
+{% if name %}
+  <h1>Hello {{ name }}!</h1>
+{% else %}
+  <h1>Hello, World!</h1>
+{% endif %} -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de asistencia</title>
+
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Lato&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+  <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles.css') }}">
+
+</head>
+<body>
+  <div class="container main-container">
+    <header class="header"><h1 class="title">Justo a tempo® <br> Sistema de gestión de asistencias</h1></header>
+    <div class="main-aside-container">
+      <main class="container">
+        <h2 class="sub-header">Características principales del sistema:</h2>
+        <hr>
+        <ul class="list">
+          <li class="list-item"></i>Registro de asistencias por reconocimiento facial.</li>
+          <li class="list-item"></i>Registro de usuarios al sistema.</li>
+          <li class="list-item"></i>Adminstración de asistencias.</li>
+          <li class="list-item"></i>Reportes de assistencias.</li>
+        </ul>
+      </main>
+      <aside class="container menu">
+        <a class="menu-item" id="assit-sistem" href="{{url_for('detect_face')}}">Registrar asistencias</a>
+        <a class="menu-item" id="register" href="#">Registrar usuario</a>
+        <a class="menu-item" id="train" href="#">Entrenar sistema</a>
+        <a class="menu-item" id="users" href="{{url_for('users_view')}}">Visualizar usuarios</a>
+        <a class="menu-item" id="assists" href="{{url_for('assists')}}">Visualizar asistencias</a>
+      </aside>
+    </div>
+  </div>
+
+  <!-- MODAL REGISTRO -->
+  <div id="modal" class="modal" hidden>
+    <div class="modal-cont">
+      <h2>Registro de usuario.</h2>
+      <form id="form" action="#">
+        <div class="form-group">
+          <label for="">Nombre</label>
+          <input type="text" id="name">
+        </div>
+        <div class="form-group">
+          <label for="">Fecha de nacimiento</label>
+          <input type="date" id="birthday">
+        </div>
+        <a class="btn btn-cancel"href="#" id="modalCancel">Cancelar</a>
+        <a class="btn btn-primary" href="#" id="send">Enviar</a>
+      </form>
+    </div>
+  </div>
+
+</body>
+<script src="../static/index.js"></script>
+</html>

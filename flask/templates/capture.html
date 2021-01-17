@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+    <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous"> -->
+
+    <script src="https://kit.fontawesome.com/23cb7ef08a.js" crossorigin="anonymous"></script>
+
+    <title>Sistema de captura de caras - {{ name }}</title>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-lg-6 offset-lg-3">
+            <h3 class="mt-5">Capturando rostro de {{ name }}</h3>
+            <img src="{{ url_for('video_feed', name=name) }}" width="100%">
+            <div class="container d-flex flex-column justify-content-center align-items-center">
+                <label class="m-2" id="status"></label>
+                <div class="fa-3x">
+                    <i id="charge" class="fas fa-sync fa-spin"></i>
+                    <i id="done" class="far fa-check-circle" hidden></i>
+                </div>
+                <a href="{{ url_for('index') }}" id="finish" class="btn btn-primary self-center m-2" hidden>
+                    Terminar
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    if (document.readyState) {
+        console.log("comenzó el tiempo");
+        let status = document.querySelector('#status')
+        let finish = document.querySelector('#finish')
+        let charge = document.querySelector('#charge')
+        let done = document.querySelector('#done')
+        status.textContent = "Reconociendo cara..."
+
+        setTimeout(() => {
+            console.log("Se acabo el tiempo");
+            status.textContent = "¡Reconocimiento completado!";
+            finish.removeAttribute("hidden");
+            charge.style.display = 'none';
+            done.removeAttribute("hidden");
+        }, 25000);
+    }
+</script>
+</body>
+</html>

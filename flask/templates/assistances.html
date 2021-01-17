@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ASISTENCIAS</title>
+
+  <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles.css') }}">
+</head>
+<body>
+  <div class="container-xl">
+    <h1 id="dateAssists"></h1>
+    <br>
+    <table id="table"></table>
+    <br>
+    <hr>
+    <br>
+    <div class="canvas-container">
+      <canvas id="myChart"></canvas>
+    </div>
+  </div>
+</body>
+
+<style>
+  
+  .canvas-container {
+    /* height: 80%; */
+    width: 50%;
+  }
+
+</style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js" integrity="sha512-d9xgZrVZpmmQlfonhQUvTR7lMPtO7NkZMkA0ABN3PHCbKA5nqylQ/yWlFAyY6hYgdF1Qh6nYiuADWwKB4C2WSw==" crossorigin="anonymous"></script>
+
+<script>
+
+</script>
+
+<script>
+  let das = document.querySelector("#dateAssists")
+  today = new Date(Date.now())
+  var options = { year: 'numeric', month: 'long', day: 'numeric' };
+  today = today.toLocaleDateString('es-MX', options)
+  das.textContent = `Asistencias del día ${ today }`
+
+  const logFetch = async (url) => {
+  try {
+    // const response = await fetch(url);
+    // data = response.json();
+    // console.log(data);
+    return (await fetch(url)).json();
+  }
+  catch (err) {
+    console.log('fetch failed', err);
+  }
+}
+
+  var aTiempo = 0;
+  var tarde = 0;
+  var noLlegaron = 0;
+  var noUsuarios = 0;
+  var asistencias = []
+
+  if (document.readyState) {
+
+    (async () => {
+    var usuarios = await logFetch("/users");
+      console.log(usuarios); // {"metadata": "for: test.png"}
+      noUsuarios = usuarios.length;
+      console.log(`USUARIOS: ${noUsuarios}`);
+    })();
+
+    (async () => {
+    asistencias = await logFetch("/assistances");
+      console.log(asistencias); // {"metadata": "for: test.png"}
+    })();
+
+
+    // asistencias.forEach(element => {
+    //   console.log(`Ùsuario: ${element}`);
+    //     var row = document.createElement("tr");
+    //     var celdaId = document.createElement("td");
+    //     var celdaNa = document.createElement("td");
+    //     var celdaFe = document.createElement("td");
+
+    //     var id = document.createTextNode(element.id);
+    //     var nombre = document.createTextNode(element.name);
+    //     var fecha = document.createTextNode(element.date);
+
+    //     let horaLlegadoa = new Date(element.date)
+    //     let horas = horaLlegadoa.getHours();
+    //     let minutos = horaLlegadoa.getMinutes();
+
+    //     if (horas <= 8 && minutos <= 15)
+    //       aTiempo++;
+
+    //     if (horas <= 8 && minutos > 15)
+    //       tarde++;        
+
+    //     if (horas > 8)
+    //       tarde++;
+
+    //     celdaId.appendChild(id)
+    //     celdaNa.appendChild(nombre)
+    //     celdaFe.appendChild(fecha)
+
+    //     row.appendChild(celdaId)
+    //     row.appendChild(celdaNa)
+    //     row.appendChild(celdaFe)
+
+    //     table.appendChild(row)
+    //   });
+
+    // var users = logFetch('/users');
+    // console.log(`El numero de usuarios es: ${users}`);
+
+    // fetch("/users", {
+    //   method: 'GET'
+    // }).then(res => res.json())
+    // .catch(error => console.log('Error: ', error))
+    // .then(response => {
+    //   console.log('USUARIOS');
+    //   console.log(response);
+    //   noUsuarios = response.length;
+    //   console.log('Numero usuarios: ' + noUsuarios );
+    // })
+
+    fetch("/assistances", {
+      method: 'GET', 
+    }).then(res => res.json())
+    .catch(error => console.error('Error:', error))
+    .then(response => {
+      console.log('Success:', response)
+      var table = document.querySelector("#table")
+      let row = `
+        <tr id="table_0">
+          <th>ID</th>
+          <th>NOMBRE</th>
+          <th>FECHA Y HORA</th>
+        </tr>`;
+      table.innerHTML = row;
+
+      response.forEach(element => {
+        var row = document.createElement("tr");
+        var celdaId = document.createElement("td");
+        var celdaNa = document.createElement("td");
+        var celdaFe = document.createElement("td");
+
+        var id = document.createTextNode(element.id);
+        var nombre = document.createTextNode(element.name);
+        var fecha = document.createTextNode(element.date);
+
+        let horaLlegadoa = new Date(element.date)
+        let horas = horaLlegadoa.getHours();
+        let minutos = horaLlegadoa.getMinutes();
+        console.log(`Horario de llegada: ${horas} : ${minutos}`);
+
+        if (horas <= 8 && minutos <= 15)
+          aTiempo++;
+
+        if ((horas <= 8 && minutos > 15) || (horas > 8))
+          tarde++;        
+
+        // if (horas > 8)
+        //   console.log("Llego tarde");
+        //   tarde = tarde + 1;
+
+        celdaId.appendChild(id)
+        celdaNa.appendChild(nombre)
+        celdaFe.appendChild(fecha)
+
+        row.appendChild(celdaId)
+        row.appendChild(celdaNa)
+        row.appendChild(celdaFe)
+
+        table.appendChild(row)
+      });
+
+      noLlegaron = noUsuarios - (tarde + aTiempo)
+
+      console.log(`A tiempo: ${aTiempo}`);
+      console.log(`Tarde: ${tarde}`);
+      console.log(`No llegaron: ${noLlegaron}`);
+
+      makeGraph();
+
+
+    });
+  }
+
+  // noLlegaron = noUsuarios - (tarde + aTiempo)
+
+  // console.log(`A tiempo: ${aTiempo}`);
+  // console.log(`Tarde: ${tarde}`);
+  // console.log(`No llegaron: ${noLlegaron}`);
+
+// GRAFICO
+const makeGraph = () => {
+  var ctx = document.getElementById('myChart').getContext('2d');
+  var myChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+          labels: ['Llegaron a tiempo', 'Llegaron tarde', 'No llegaron'],
+          datasets: [{
+              label: '# registros asistencia',
+              data: [aTiempo, tarde, noLlegaron],
+              backgroundColor: [
+                  'rgba(255, 99, 132, 0.2)',
+                  'rgba(54, 162, 235, 0.2)',
+                  'rgba(255, 206, 86, 0.2)',
+                  'rgba(75, 192, 192, 0.2)',
+                  'rgba(153, 102, 255, 0.2)',
+                  'rgba(255, 159, 64, 0.2)'
+              ],
+              borderColor: [
+                  'rgba(255, 99, 132, 1)',
+                  'rgba(54, 162, 235, 1)',
+                  'rgba(255, 206, 86, 1)',
+                  'rgba(75, 192, 192, 1)',
+                  'rgba(153, 102, 255, 1)',
+                  'rgba(255, 159, 64, 1)'
+              ],
+              borderWidth: 1
+          }]
+      },
+      options: {
+          scales: {
+              yAxes: [{
+                  ticks: {
+                      beginAtZero: true
+                  }
+              }]
+          }
+      }
+  });
+
+}
+</script>
+
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>USUARIOS</title>
+
+  <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles.css') }}">
+
+</head>
+<body>
+  <div class="container-xl">
+    <table id="table"></table>
+  </div>
+</body>
+
+<script>
+  
+  if (document.readyState) {
+    fetch("/users", {
+      method: 'GET', // or 'PUT'
+    }).then(res => res.json())
+    .catch(error => console.error('Error:', error))
+    .then(response => {
+      console.log('Success:', response)
+      var table = document.querySelector("#table")
+      // let row = response[0].name
+      let row = `
+        <tr id="table_0">
+          <th>ID</th>
+          <th>NOMBRE</th>
+          <th>Cumpleaños</th>
+        </tr>`;
+      table.innerHTML = row;
+
+      // table = document.getElementById("table_0")
+      // var cont = 0
+      response.forEach(element => {
+        var row = document.createElement("tr");
+        var celdaId = document.createElement("td");
+        var celdaNa = document.createElement("td");
+        var celdaFe = document.createElement("td");
+
+        var id = document.createTextNode(element.id);
+        var nombre = document.createTextNode(element.name);
+        var fecha = document.createTextNode(element.birthday);
+
+        celdaId.appendChild(id)
+        celdaNa.appendChild(nombre)
+        celdaFe.appendChild(fecha)
+
+        row.appendChild(celdaId)
+        row.appendChild(celdaNa)
+        row.appendChild(celdaFe)
+
+        table.appendChild(row)
+      });
+
+      // genera_tabla()
+      // window.location.href = `/register_face/${response.userName}`
+    });
+  }
+</script>
+
+</html>
